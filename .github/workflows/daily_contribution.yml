@@ -1,0 +1,28 @@
+name: Daily Contribution
+
+on:
+  schedule:
+    - cron: '0 8 * * *'  # Runs daily at 08:00 UTC
+  workflow_dispatch:     # Allows manual triggering
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write    # Grants GITHUB_TOKEN write access to push commits
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update activity.log
+        run: |
+          echo "$(date -u) - Heartbeat: $RANDOM" >> activity.log
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.name "Automated Bot"
+          git config --local user.email "bot@github.com"
+          git add activity.log
+          git commit -m "chore: automated activity sync [skip ci]"
+          git push
