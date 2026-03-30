@@ -22,7 +22,7 @@ jobs:
       - name: Commit and push changes
         run: |
           git config --local user.name "Automated Bot"
-          git config --local user.email "bot@github.com"
+          git config --local user.email "bosirebrian718@gmail.com"
           git add activity.log
           git commit -m "chore: automated activity sync [skip ci]"
           git push
