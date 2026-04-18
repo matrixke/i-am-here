@@ -1,28 +1,32 @@
-name: Daily Contribution
+name: High Intensity Contributions
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # Runs daily at 08:00 UTC
-  workflow_dispatch:     # Allows manual triggering
+    - cron: '0 8 * * *'    # Runs daily at 08:00 UTC
+  workflow_dispatch:       # Allows you to trigger it manually for a boost
 
 jobs:
   auto-commit:
     runs-on: ubuntu-latest
     permissions:
-      contents: write    # Grants GITHUB_TOKEN write access to push commits
+      contents: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Update activity.log
+      - name: Generate Multiple Heartbeats
         run: |
-          echo "$(date -u) - Heartbeat: $RANDOM" >> activity.log
+          # This loop runs 10 times to create 10 separate commits
+          # More commits = Brighter green box
+          for i in {1..10}
+          do
+            echo "$(date -u) - Intensity Pulse: $RANDOM" >> activity.log
+            git config --local user.name "matrixke"
+            git config --local user.email "bosirebrian718@gmail.com"
+            git add activity.log
+            git commit -m "chore: mechanical sync $i [skip ci]"
+          done
 
-      - name: Commit and push changes
-        run: |
-          git config --local user.name "matrixke"
-          git config --local user.email "bosirebrian718@gmail.com"
-          git add activity.log
-          git commit -m "chore: automated activity sync [skip ci]"
-          git push
+      - name: Push changes
+        run: git push
