@@ -1,9 +1,10 @@
-name: High Intensity Contributions
+name: Natural Contributions
 
 on:
   schedule:
-    - cron: '0 8 * * *'    # Runs daily at 08:00 UTC
-  workflow_dispatch:       # Allows you to trigger it manually for a boost
+    # Runs at a random-ish time (e.g., 07:45 UTC) to avoid "exact hour" patterns
+    - cron: '45 7 * * *'
+  workflow_dispatch:
 
 jobs:
   auto-commit:
@@ -15,17 +16,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate Multiple Heartbeats
+      - name: Generate Natural Activity
         run: |
-          # This loop runs 10 times to create 10 separate commits
-          # More commits = Brighter green box
-          for i in {1..10}
+          # 1. Randomly decide if we should skip today (20% chance of no activity)
+          if [ $(( RANDOM % 10 )) -lt 2 ]; then
+            echo "Taking a break today. No commits."
+            exit 0
+          fi
+
+          # 2. Randomize the number of commits (between 1 and 12)
+          # This creates different shades of green
+          COMMIT_COUNT=$(( 1 + RANDOM % 12 ))
+          echo "Planning $COMMIT_COUNT commits for today."
+
+          git config --local user.name "matrixke"
+          git config --local user.email "bosirebrian718@gmail.com"
+
+          for i in $(seq 1 $COMMIT_COUNT)
           do
-            echo "$(date -u) - Intensity Pulse: $RANDOM" >> activity.log
-            git config --local user.name "matrixke"
-            git config --local user.email "bosirebrian718@gmail.com"
+            # 3. Add a small sleep between commits so timestamps aren't identical
+            sleep $(( RANDOM % 5 ))
+            echo "$(date -u) - Activity Log: $RANDOM" >> activity.log
             git add activity.log
-            git commit -m "chore: mechanical sync $i [skip ci]"
+            git commit -m "refactor: update activity logs"
           done
 
       - name: Push changes
